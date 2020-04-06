@@ -3,7 +3,7 @@ Implmentation of MMI-Reranking Dialo-GPT.
 
 ## Downloads
 
-you have to download DialoGPT 345M model, DialoGPT 345M model (reverse), and config.
+you have to download DialoGPT 345M model (forward model), DialoGPT 345M model (backward model), and [config](https://github.com/microsoft/DialoGPT/tree/master/configs/345M).
 
 ## Examples
 
