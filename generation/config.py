@@ -7,7 +7,7 @@ class InferenceConfig(NamedTuple):
     max_context_length: int = 128
     num_samples: int = 10
     top_k: int = 10
-    mmi_temperature: float = 0.5
+    temperature: float = 0.8
 
     tokenizer_vocab_path: str = "pretrained_gpt/vocab.json"
     tokenizer_merge_path: str = "pretrained_gpt/merges.txt"

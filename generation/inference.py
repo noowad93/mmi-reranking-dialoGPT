@@ -57,7 +57,7 @@ class Inferencer:
                     :, -1
                 ].unsqueeze(1)
                 forward_output_token[ignore_indices] = -float("inf")
-                forward_output_token = torch.multinomial(F.softmax(forward_output_token, dim=-1), num_samples=1)
+                forward_output_token = torch.multinomial(F.softmax(forward_output_token/self.config.temperature, dim=-1), num_samples=1)
                 model_output = torch.cat((model_output, forward_output_token), dim=1)
                 if forward_output_token.item() == self.config.eos_token_idx:
                     break
