@@ -1,5 +1,5 @@
 # MMI-reranking DialoGPT
-Implmentation of MMI-Reranking Dialo-GPT.
+Implementation of MMI-Reranking Dialo-GPT.
 
 ## Downloads
 
