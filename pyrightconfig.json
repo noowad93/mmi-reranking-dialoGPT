@@ -1,8 +1,9 @@
 {
-  "include": ["pack"],
-  "venvPath": "env",
-
-  "reportUnknownVariableType": true,
+  "include": [
+    "generation"
+  ],
+  "venvPath": "venv",
+  "reportUnknownVariableType": false,
   "reportUnknownMemberType": true,
   "reportUnusedImport": true,
   "reportUnusedVariable": true,
@@ -19,7 +20,6 @@
   "reportUnnecessaryCast": true,
   "reportAssertAlwaysTrue": true,
   "reportSelfClsParameterName": true,
-
   "pythonVersion": "3.7",
   "pythonPlatform": "Linux"
 }
