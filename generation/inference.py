@@ -42,30 +42,35 @@ class Inferencer:
         return results
 
     def _get_replies(self, forward_context: torch.Tensor, backward_context: torch.Tensor) -> Dict[str, float]:
-        # inference w.r.t context
-        _, past = self.forward_model.forward(forward_context[:, :-1], past=None)
 
         # auto-regressive inference
         reply_dict = {}
-        for _ in range(self.config.num_samples):
-            model_output = torch.tensor([[]], dtype=torch.long).to(self.forward_device)
-            forward_output_token = forward_context[:, -1:]
+        while len(reply_dict)<self.config.num_samples:
+            # inference w.r.t context
+            _, past = self.forward_model.forward(forward_context[:, :-1], past=None)
+
+            # auto-regressive inference
+            model_output = torch.tensor([[]], dtype=torch.long).to(self.device)
+            output_token = forward_context[:, -1:]
+            step=0
             while True:
-                forward_output_token, past = self.forward_model.forward(forward_output_token, past)
-                forward_output_token = forward_output_token[:, -1, :].float()
-                ignore_indices = forward_output_token < torch.topk(forward_output_token, self.config.top_k)[0][
-                    :, -1
-                ].unsqueeze(1)
-                forward_output_token[ignore_indices] = -float("inf")
-                forward_output_token = torch.multinomial(F.softmax(forward_output_token/self.config.temperature, dim=-1), num_samples=1)
-                model_output = torch.cat((model_output, forward_output_token), dim=1)
-                if forward_output_token.item() == self.config.eos_token_idx:
+                step+=1
+                output, past = self.forward_model.forward(output_token, past)
+                output_prob = F.softmax(output[0, -1, :]/self.config.temperature, dim=-1)
+                ignore_indices = output_prob < torch.topk(output_prob, self.config.top_k)[0][-1]
+                output_prob[ignore_indices] = 0.0
+
+                output_token = torch.multinomial(output_prob, num_samples=1).unsqueeze(0)
+                model_output = torch.cat((model_output, output_token), dim=1)
+                if output_token.item() == self.config.eos_token_idx:
                     break
+
             backward_model_score = self._get_backward_score(
                 model_output.to(self.config.device_for_forward), backward_context
             )
             reply = self.tokenizer.decode(model_output.tolist()[0], skip_special_tokens=True)
-            reply_dict[reply] = backward_model_score
+            if reply not in reply_dict:
+                 reply_dict[reply] = backward_model_score
         return reply_dict
 
     def _get_backward_score(self, forward_model_output: torch.Tensor, backward_context: torch.Tensor) -> float:
