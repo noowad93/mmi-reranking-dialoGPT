@@ -2,5 +2,3 @@ tensorflow
 sentencepiece
 torch==1.3.1
 transformers
-
-git+ssh://git@github.com/scatterlab/pingpong-nlp.git#egg=pingpong-nlp
